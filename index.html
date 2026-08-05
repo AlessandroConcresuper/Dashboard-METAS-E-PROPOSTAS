@@ -534,4 +534,90 @@ function renderizarPropRank() {
     arr.push({ n:p.vendedor, total:soma, media: ativos > 0 ? soma/ativos : 0, melhorDia:melhorDia, ativos:ativos });
   });
   arr.sort(function(a,b) { return b.total - a.total; });
-  var tbody = 
+  var tbody = document.getElementById('propRankBody');
+  tbody.innerHTML = '';
+  arr.forEach(function(d, i) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + (i+1) + 'º</td><td>' + d.n + '</td><td>' + fmtInt(d.total) + '</td><td>' + d.media.toFixed(1) + '</td><td>Dia ' + d.melhorDia + '</td><td>' + d.ativos + '</td>';
+    tbody.appendChild(tr);
+  });
+}
+function renderizarGraficosProp() {
+  var porVend = {};
+  propFiltradas.forEach(function(p) {
+    var soma = 0;
+    for (var d = 0; d < p.dias.length; d++) soma += p.dias[d];
+    porVend[p.vendedor] = soma;
+  });
+  var nomes = Object.keys(porVend).sort(function(a,b) { return porVend[b] - porVend[a]; });
+  var vals = nomes.map(function(n) { return porVend[n]; });
+  var cores = ['#F5B400','#3B82F6','#22C55E','#EF4444','#8B5CF6','#FB923C','#06B6D4','#EC4899','#10B981','#F59E0B'];
+  destruir('chartPropRank');
+  graf.chartPropRank = new Chart(document.getElementById('chartPropRank'), {
+    type:'bar', data:{labels:nomes,datasets:[{label:'Propostas',data:vals,backgroundColor:cores,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
+  });
+  var porDia = {};
+  propFiltradas.forEach(function(p) {
+    for (var d = 0; d < p.dias.length; d++) { porDia[d+1] = (porDia[d+1] || 0) + p.dias[d]; }
+  });
+  var dias = Object.keys(porDia).sort(function(a,b) { return parseInt(a) - parseInt(b); });
+  destruir('chartPropEvo');
+  graf.chartPropEvo = new Chart(document.getElementById('chartPropEvo'), {
+    type:'line', data:{labels:dias.map(function(d){return 'Dia '+d;}),datasets:[{label:'Propostas',data:dias.map(function(d){return porDia[d];}),borderColor:'#F5B400',backgroundColor:'rgba(245,180,0,0.15)',fill:true,tension:0.3,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#fff'}}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
+  });
+  var semana = [0,0,0,0,0,0,0];
+  propFiltradas.forEach(function(p) {
+    for (var d = 0; d < p.dias.length; d++) {
+      var diaSemana = new Date(2026, 6, d+1).getDay();
+      semana[diaSemana] += p.dias[d];
+    }
+  });
+  var nomesSemana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  destruir('chartPropSemana');
+  graf.chartPropSemana = new Chart(document.getElementById('chartPropSemana'), {
+    type:'bar', data:{labels:nomesSemana,datasets:[{label:'Propostas',data:semana,backgroundColor:'#8B5CF6',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
+  });
+  destruir('chartPropPart');
+  graf.chartPropPart = new Chart(document.getElementById('chartPropPart'), {
+    type:'doughnut', data:{labels:nomes,datasets:[{data:vals,backgroundColor:cores,borderWidth:2,borderColor:'#111F30'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#fff',font:{size:11}}}}}
+  });
+}
+function renderizarIndividuais() {
+  var grid = document.getElementById('indivGrid');
+  grid.innerHTML = '';
+  var cores = ['#F5B400','#3B82F6','#22C55E','#EF4444','#8B5CF6','#FB923C','#06B6D4','#EC4899','#10B981','#F59E0B'];
+  var diasLabels = [];
+  for (var i = 1; i <= 31; i++) diasLabels.push('Dia ' + i);
+  propFiltradas.forEach(function(p, idx) {
+    var cor = cores[idx % cores.length];
+    var card = document.createElement('div');
+    card.className = 'indiv-card';
+    var canvasId = 'indiv_' + idx;
+    card.innerHTML = '<div class="indiv-name" style="color:' + cor + '">' + p.vendedor + '</div><div class="indiv-chart"><canvas id="' + canvasId + '"></canvas></div>';
+    grid.appendChild(card);
+    var meta5 = Array(p.dias.length).fill(5);
+    destruir(canvasId);
+    graf[canvasId] = new Chart(document.getElementById(canvasId), {
+      type:'line',
+      data:{labels:diasLabels.slice(0, p.dias.length),datasets:[
+        {label:p.vendedor,data:p.dias,borderColor:cor,backgroundColor:'rgba(' + hexToRgb(cor) + ',0.1)',fill:false,tension:0.3,borderWidth:2,pointRadius:2},
+        {label:'Meta 5/dia',data:meta5,borderColor:'#FF5C5C',borderDash:[5,5],fill:false,tension:0,borderWidth:1,pointRadius:0}
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3',font:{size:9}},max:10},x:{display:false}}}
+    });
+  });
+}
+function hexToRgb(hex) {
+  var r = parseInt(hex.substr(1,2),16);
+  var g = parseInt(hex.substr(3,2),16);
+  var b = parseInt(hex.substr(5,2),16);
+  return r + ',' + g + ',' + b;
+}
+window.addEventListener('DOMContentLoaded', function() { carregarDados(); });
+</script>
+</body>
+</html>
