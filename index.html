@@ -71,10 +71,7 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 <div class="header">
 <div class="brand">
 <div class="logo">C</div>
-<div>
-<h1>Dashboard Concresuper</h1>
-<p>Metas, Produzido e Propostas</p>
-</div>
+<div><h1>Dashboard Concresuper</h1><p>Metas, Produzido e Propostas</p></div>
 </div>
 <div class="top-actions">
 <div class="header-right">Última Atualização<br><b id="ultAtualizacao">—</b></div>
@@ -86,8 +83,6 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 <button class="tab-btn" onclick="trocarAba('propostas')">📋 Propostas</button>
 </div>
 <div class="erro-box" id="erroMsg"><b>Atenção:</b> <span id="erroTexto"></span></div>
-
-<!-- ABA 1: METAS E PRODUZIDO -->
 <div class="tab-content active" id="aba-metas">
 <div class="info-banner"><span style="font-size:18px">💡</span><span>Filtre por <b>Mês</b>, <b>Dia</b>, <b>Filial</b>, <b>Cidade</b> ou <b>Vendedor</b>.</span></div>
 <div class="filters">
@@ -105,9 +100,7 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 <div class="kpi-card"><p class="kpi-label">Dias Restantes</p><p class="kpi-value" id="kpiDias">—</p></div>
 </div>
 <div class="section-title">Produzido vs Meta 100% <span class="badge">NOVO</span></div>
-<div class="charts-grid">
-<div class="panel chart-full"><div class="panel-title">Produzido vs Meta 100% Individual</div><div class="chart-area"><canvas id="chartMeta100"></canvas></div></div>
-</div>
+<div class="charts-grid"><div class="panel chart-full"><div class="panel-title">Produzido vs Meta 100% Individual</div><div class="chart-area"><canvas id="chartMeta100"></canvas></div></div></div>
 <div class="section-title">Análise de Desempenho</div>
 <div class="charts-grid">
 <div class="panel"><div class="panel-title">Ranking por Volume</div><div class="chart-area"><canvas id="chartRank"></canvas></div></div>
@@ -120,14 +113,9 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 <div class="section-title">Classificação Geral</div>
 <div class="ranking-section">
 <div class="podium" id="podium"></div>
-<table class="rank-table">
-<thead><tr><th>#</th><th>Vendedor</th><th>Produzido</th><th>Meta</th><th>%</th></tr></thead>
-<tbody id="rankBody"></tbody>
-</table>
+<table class="rank-table"><thead><tr><th>#</th><th>Vendedor</th><th>Produzido</th><th>Meta</th><th>%</th></tr></thead><tbody id="rankBody"></tbody></table>
 </div>
 </div>
-
-<!-- ABA 2: PROPOSTAS -->
 <div class="tab-content" id="aba-propostas">
 <div class="info-banner"><span style="font-size:18px">💡</span><span>Filtre as propostas por <b>Mês</b> ou <b>Vendedor</b>.</span></div>
 <div class="filters">
@@ -149,15 +137,10 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 </div>
 <div class="section-title">Ranking de Propostas</div>
 <div class="ranking-section">
-<table class="rank-table">
-<thead><tr><th>#</th><th>Vendedor</th><th>Total Propostas</th><th>Média/Dia</th><th>Melhor Dia</th><th>Dias Ativos</th></tr></thead>
-<tbody id="propRankBody"></tbody>
-</table>
+<table class="rank-table"><thead><tr><th>#</th><th>Vendedor</th><th>Total Propostas</th><th>Média/Dia</th><th>Melhor Dia</th><th>Dias Ativos</th></tr></thead><tbody id="propRankBody"></tbody></table>
 </div>
 </div>
-
 <div class="toast" id="toast">Carregando...</div>
-
 <script>
 var CAMINHO = 'dados.xlsx';
 var dados = [], filtrados = [], metas100 = {}, propostas = [], propFiltradas = [], graf = {};
@@ -175,7 +158,7 @@ function parseData(v) {
   var s = String(v).trim(), p = s.split('/');
   if (p.length === 3) {
     var a = parseInt(p[0]), b = parseInt(p[1]), c = parseInt(p[2]);
-    if (c &lt; 100) c += 2000;
+    if (c < 100) c += 2000;
     if (a > 12) return new Date(c, b-1, a, 12, 0, 0);
     if (b > 12) return new Date(c, a-1, b, 12, 0, 0);
     return new Date(c, a-1, b, 12, 0, 0);
@@ -203,21 +186,21 @@ function trocarAba(aba) {
 function lerMetas100(wb) {
   metas100 = {};
   var sheetName = null;
-  for (var i = 0; i &lt; wb.SheetNames.length; i++) {
+  for (var i = 0; i < wb.SheetNames.length; i++) {
     if (wb.SheetNames[i].toLowerCase().indexOf('meta') !== -1) { sheetName = wb.SheetNames[i]; break; }
   }
   if (!sheetName) return;
   var rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: '' });
   var idxMes = -1, idxVend = -1, idxMeta = -1;
   var header = rows[0] || [];
-  for (var c = 0; c &lt; header.length; c++) {
+  for (var c = 0; c < header.length; c++) {
     var h = String(header[c] || '').trim().toLowerCase();
     if (h.indexOf('mes') !== -1 && idxMes === -1) idxMes = c;
     else if (h.indexOf('vendedor') !== -1 && idxVend === -1) idxVend = c;
     else if (h.indexOf('meta') !== -1 && idxMeta === -1) idxMeta = c;
   }
-  if (idxMes &lt; 0 || idxVend &lt; 0 || idxMeta &lt; 0) return;
-  for (var r = 1; r &lt; rows.length; r++) {
+  if (idxMes < 0 || idxVend < 0 || idxMeta < 0) return;
+  for (var r = 1; r < rows.length; r++) {
     var row = rows[r];
     if (!row) continue;
     var mes = String(row[idxMes] || '').trim().toLowerCase();
@@ -236,7 +219,7 @@ function getMeta100(vendedor, mes) {
 function processarDados(registros) {
   var headerRow = registros[0] || [];
   var colMap = {};
-  for (var c = 0; c &lt; headerRow.length; c++) {
+  for (var c = 0; c < headerRow.length; c++) {
     var h = String(headerRow[c] || '').trim().toLowerCase();
     if (!h) continue;
     if (h.indexOf('cidade') !== -1 && colMap.cidade === undefined) colMap.cidade = c;
@@ -253,7 +236,7 @@ function processarDados(registros) {
   if (colMap.meta === undefined) colMap.meta = 4;
   if (colMap.data === undefined) colMap.data = 5;
   dados = [];
-  for (var i = 1; i &lt; registros.length; i++) {
+  for (var i = 1; i < registros.length; i++) {
     var row = registros[i];
     if (!row) continue;
     var cidade = String(row[colMap.cidade] || '').trim();
@@ -261,9 +244,9 @@ function processarDados(registros) {
     var vendedor = String(row[colMap.vendedor] || '').trim();
     if (!vendedor || vendedor.match(/^(vendedor|total|meta|)$/i)) continue;
     var produzido = parseNum(row[colMap.produzido]);
-    if (isNaN(produzido) || produzido &lt;= 0) continue;
+    if (isNaN(produzido) || produzido <= 0) continue;
     var meta = parseNum(row[colMap.meta]);
-    if (isNaN(meta) || meta &lt;= 0) continue;
+    if (isNaN(meta) || meta <= 0) continue;
     var dataRaw = row[colMap.data];
     if (!dataRaw) continue;
     var dt = parseData(dataRaw);
@@ -280,7 +263,7 @@ function processarDados(registros) {
 function lerPropostas(wb) {
   propostas = [];
   var sheetName = null;
-  for (var i = 0; i &lt; wb.SheetNames.length; i++) {
+  for (var i = 0; i < wb.SheetNames.length; i++) {
     if (wb.SheetNames[i].toLowerCase().indexOf('propost') !== -1) { sheetName = wb.SheetNames[i]; break; }
   }
   if (!sheetName) { console.log('Aba de Propostas nao encontrada'); return; }
@@ -288,21 +271,21 @@ function lerPropostas(wb) {
   var header = rows[0] || [];
   var idxMes = -1, idxVend = -1;
   var diaCols = [];
-  for (var c = 0; c &lt; header.length; c++) {
+  for (var c = 0; c < header.length; c++) {
     var h = String(header[c] || '').trim().toLowerCase();
     if (h.indexOf('mes') !== -1 && idxMes === -1) idxMes = c;
     else if (h.indexOf('vendedor') !== -1 && idxVend === -1) idxVend = c;
     else if (h.indexOf('dia') !== -1) diaCols.push(c);
   }
-  if (idxMes &lt; 0 || idxVend &lt; 0) return;
-  for (var r = 1; r &lt; rows.length; r++) {
+  if (idxMes < 0 || idxVend < 0) return;
+  for (var r = 1; r < rows.length; r++) {
     var row = rows[r];
     if (!row) continue;
     var mes = String(row[idxMes] || '').trim();
     var vend = String(row[idxVend] || '').trim();
     if (!mes || !vend || vend.toLowerCase() === 'vendedor' || vend.toLowerCase() === 'data') continue;
     var dias = [];
-    for (var d = 0; d &lt; diaCols.length; d++) {
+    for (var d = 0; d < diaCols.length; d++) {
       dias.push(parseNum(row[diaCols[d]]));
     }
     propostas.push({ mes: mes, vendedor: vend, dias: dias });
@@ -318,7 +301,7 @@ async function carregarDados() {
   try {
     var caminhos = [CAMINHO, './dados.xlsx', 'dados.xlsx'];
     var buffer = null;
-    for (var c = 0; c &lt; caminhos.length; c++) {
+    for (var c = 0; c < caminhos.length; c++) {
       try {
         var url = caminhos[c] + '?_=' + Date.now();
         var r = await fetch(url, { cache: 'no-store' });
@@ -330,7 +313,7 @@ async function carregarDados() {
     console.log('Abas:', wb.SheetNames);
     lerMetas100(wb);
     var sheetDados = wb.SheetNames[0];
-    for (var s = 0; s &lt; wb.SheetNames.length; s++) {
+    for (var s = 0; s < wb.SheetNames.length; s++) {
       var sn = wb.SheetNames[s].toLowerCase();
       if (sn.indexOf('dados') !== -1 || sn.indexOf('diario') !== -1) { sheetDados = wb.SheetNames[s]; break; }
     }
@@ -361,4 +344,256 @@ async function carregarDados() {
 function preencherFiltros() {
   var meses = [], dias = [], filiais = [], cidades = [], vendedores = [];
   dados.forEach(function(d) {
-    if (meses.indexOf(d.mes) === -1) 
+    if (meses.indexOf(d.mes) === -1) meses.push(d.mes);
+    if (dias.indexOf(d.dia) === -1) dias.push(d.dia);
+    if (filiais.indexOf(d.filial) === -1) filiais.push(d.filial);
+    if (cidades.indexOf(d.cidade) === -1) cidades.push(d.cidade);
+    if (vendedores.indexOf(d.vendedor) === -1) vendedores.push(d.vendedor);
+  });
+  function pop(id, arr, allLabel) {
+    var sel = document.getElementById(id);
+    var cur = sel.value;
+    sel.innerHTML = '<option value="all">' + allLabel + '</option>';
+    arr.forEach(function(v) { var o = document.createElement('option'); o.value = v; o.textContent = v; sel.appendChild(o); });
+    sel.value = cur;
+  }
+  pop('fMes', meses, 'Todos'); pop('fDia', dias, 'Todos');
+  pop('fFilial', filiais, 'Todas'); pop('fCidade', cidades, 'Todas');
+  pop('fVendedor', vendedores, 'Todos');
+}
+function aplicarFiltros() {
+  var fMes = document.getElementById('fMes').value;
+  var fDia = document.getElementById('fDia').value;
+  var fFilial = document.getElementById('fFilial').value;
+  var fCidade = document.getElementById('fCidade').value;
+  var fVendedor = document.getElementById('fVendedor').value;
+  filtrados = dados.filter(function(d) {
+    if (fMes !== 'all' && d.mes !== fMes) return false;
+    if (fDia !== 'all' && d.dia !== fDia) return false;
+    if (fFilial !== 'all' && d.filial !== fFilial) return false;
+    if (fCidade !== 'all' && d.cidade !== fCidade) return false;
+    if (fVendedor !== 'all' && d.vendedor !== fVendedor) return false;
+    return true;
+  });
+  atualizarKPIs(); renderizarProgresso(); renderizarRanking(); renderizarGraficos();
+}
+
+function preencherFiltrosProp() {
+  var meses = [], vends = [];
+  propostas.forEach(function(p) {
+    if (meses.indexOf(p.mes) === -1) meses.push(p.mes);
+    if (vends.indexOf(p.vendedor) === -1) vends.push(p.vendedor);
+  });
+  var selM = document.getElementById('fPropMes');
+  selM.innerHTML = '<option value="all">Todos</option>';
+  meses.forEach(function(v) { var o = document.createElement('option'); o.value = v; o.textContent = v; selM.appendChild(o); });
+  var selV = document.getElementById('fPropVend');
+  selV.innerHTML = '<option value="all">Todos</option>';
+  vends.forEach(function(v) { var o = document.createElement('option'); o.value = v; o.textContent = v; selV.appendChild(o); });
+}
+function aplicarFiltrosProp() {
+  var fMes = document.getElementById('fPropMes').value;
+  var fVend = document.getElementById('fPropVend').value;
+  propFiltradas = propostas.filter(function(p) {
+    if (fMes !== 'all' && p.mes !== fMes) return false;
+    if (fVend !== 'all' && p.vendedor !== fVend) return false;
+    return true;
+  });
+  atualizarKPIsProp(); renderizarPropRank(); renderizarGraficosProp();
+}
+
+function atualizarKPIs() {
+  var tMeta = 0, tProd = 0;
+  filtrados.forEach(function(d) { tMeta += d.meta; tProd += d.produzido; });
+  document.getElementById('kpiMeta').textContent = fmtNum(tMeta);
+  document.getElementById('kpiProd').textContent = fmtNum(tProd);
+  document.getElementById('kpiPerc').textContent = (tMeta > 0 ? (tProd/tMeta*100) : 0).toFixed(1) + '%';
+  var pv = {};
+  filtrados.forEach(function(d) { if (!pv[d.vendedor]) pv[d.vendedor] = 0; pv[d.vendedor] += d.produzido; });
+  var top = Object.keys(pv).map(function(k) { return {n:k, p:pv[k]}; }).sort(function(a,b) { return b.p - a.p; })[0];
+  document.getElementById('kpiTop').textContent = top ? top.n + ' (' + fmtNum(top.p) + ')' : '—';
+  var hoje = new Date(), fim = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0);
+  document.getElementById('kpiDias').textContent = Math.max(0, Math.ceil((fim - hoje) / 86400000));
+}
+
+function renderizarProgresso() {
+  var pv = {};
+  filtrados.forEach(function(d) {
+    if (!pv[d.vendedor]) pv[d.vendedor] = { prod:0, meta:0, mes:d.mes };
+    pv[d.vendedor].prod += d.produzido; pv[d.vendedor].meta += d.meta;
+  });
+  var grid = document.getElementById('progGrid');
+  grid.innerHTML = '';
+  Object.keys(pv).sort(function(a,b) { return pv[b].prod - pv[a].prod; }).forEach(function(v) {
+    var d = pv[v];
+    var perc = d.meta > 0 ? (d.prod/d.meta*100) : 0;
+    var m100 = getMeta100(v, d.mes);
+    var cor = perc >= 100 ? '#22C55E' : perc >= 75 ? '#F5B400' : perc >= 50 ? '#FB923C' : '#EF4444';
+    var card = document.createElement('div');
+    card.className = 'prog-card';
+    card.innerHTML = '<div class="prog-head"><span>' + v + '</span><span style="color:' + cor + '">' + perc.toFixed(1) + '%</span></div>' +
+      '<div class="bar-bg"><div class="bar-fill" style="width:' + Math.min(perc,100) + '%;background:' + cor + '"></div></div>' +
+      '<div class="prog-det"><span>Prod: ' + fmtNum(d.prod) + '</span><span>Meta: ' + fmtNum(d.meta) + '</span><span>M100: ' + (m100 > 0 ? fmtNum(m100) : '—') + '</span></div>';
+    grid.appendChild(card);
+  });
+}
+
+function renderizarRanking() {
+  var pv = {};
+  filtrados.forEach(function(d) {
+    if (!pv[d.vendedor]) pv[d.vendedor] = { prod:0, meta:0 };
+    pv[d.vendedor].prod += d.produzido; pv[d.vendedor].meta += d.meta;
+  });
+  var arr = Object.keys(pv).map(function(k) { return {n:k, p:pv[k].prod, m:pv[k].meta}; }).sort(function(a,b) { return b.p - a.p; });
+  var tbody = document.getElementById('rankBody');
+  tbody.innerHTML = '';
+  arr.forEach(function(d, i) {
+    var perc = d.m > 0 ? (d.p/d.m*100) : 0;
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + (i+1) + 'º</td><td>' + d.n + '</td><td>' + fmtNum(d.p) + '</td><td>' + fmtNum(d.m) + '</td><td>' + perc.toFixed(1) + '%</td>';
+    tbody.appendChild(tr);
+  });
+  var podium = document.getElementById('podium');
+  podium.innerHTML = '';
+  var medals = ['🥇','🥈','🥉'], classes = ['p1','p2','p3'];
+  for (var p = 0; p < Math.min(3, arr.length); p++) {
+    var perc = arr[p].m > 0 ? (arr[p].p/arr[p].m*100) : 0;
+    var div = document.createElement('div');
+    div.className = 'pod-item ' + classes[p];
+    div.innerHTML = '<div class="medal">' + medals[p] + '</div><div class="pod-name">' + arr[p].n + '</div><div class="pod-pct">' + perc.toFixed(1) + '%</div>';
+    podium.appendChild(div);
+  }
+}
+
+function renderizarGraficos() {
+  var pv = {};
+  filtrados.forEach(function(d) {
+    if (!pv[d.vendedor]) pv[d.vendedor] = { prod:0, meta:0, mes:d.mes };
+    pv[d.vendedor].prod += d.produzido; pv[d.vendedor].meta += d.meta;
+  });
+  var nomes = Object.keys(pv).sort(function(a,b) { return pv[b].prod - pv[a].prod; });
+  var prods = nomes.map(function(n) { return pv[n].prod; });
+  var metas = nomes.map(function(n) { return pv[n].meta; });
+  var m100 = nomes.map(function(n) { return getMeta100(n, pv[n].mes); });
+  var cores = ['#F5B400','#3B82F6','#22C55E','#EF4444','#8B5CF6','#FB923C','#06B6D4','#EC4899','#10B981','#F59E0B'];
+  destruir('chartRank');
+  graf.chartRank = new Chart(document.getElementById('chartRank'), {
+    type:'bar', data:{labels:nomes,datasets:[{label:'Produzido',data:prods,backgroundColor:cores,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
+  });
+  destruir('chartMetaProd');
+  graf.chartMetaProd = new Chart(document.getElementById('chartMetaProd'), {
+    type:'bar', data:{labels:nomes,datasets:[{label:'Produzido',data:prods,backgroundColor:'#F5B400',borderRadius:6},{label:'Meta',data:metas,backgroundColor:'#3B82F6',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#fff'}}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
+  });
+  destruir('chartMeta100');
+  graf.chartMeta100 = new Chart(document.getElementById('chartMeta100'), {
+    type:'bar', data:{labels:nomes,datasets:[{label:'Produzido',data:prods,backgroundColor:'#F5B400',borderRadius:6},{label:'Meta 100%',data:m100,backgroundColor:'#22C55E',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#fff'}}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
+  });
+  var porDia = {};
+  filtrados.forEach(function(d) { if (!porDia[d.dia]) porDia[d.dia] = 0; porDia[d.dia] += d.produzido; });
+  var diasArr = Object.keys(porDia).sort(function(a,b) { var pa=a.split('/'),pb=b.split('/'); return new Date(pa[2],pa[1]-1,pa[0]) - new Date(pb[2],pb[1]-1,pb[0]); });
+  destruir('chartEvo');
+  graf.chartEvo = new Chart(document.getElementById('chartEvo'), {
+    type:'line', data:{labels:diasArr,datasets:[{label:'Produção',data:diasArr.map(function(d){return porDia[d];}),borderColor:'#F5B400',backgroundColor:'rgba(245,180,0,0.1)',fill:true,tension:0.3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#fff'}}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
+  });
+  destruir('chartPart');
+  graf.chartPart = new Chart(document.getElementById('chartPart'), {
+    type:'doughnut', data:{labels:nomes,datasets:[{data:prods,backgroundColor:cores,borderWidth:2,borderColor:'#111F30'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#fff',font:{size:11}}}}}
+  });
+}
+
+function atualizarKPIsProp() {
+  var total = 0, ativos = 0;
+  var porVend = {}, porDia = {};
+  propFiltradas.forEach(function(p) {
+    var soma = 0;
+    for (var d = 0; d < p.dias.length; d++) {
+      soma += p.dias[d];
+      if (p.dias[d] > 0) { porDia[d+1] = (porDia[d+1] || 0) + p.dias[d]; }
+    }
+    total += soma;
+    if (soma > 0) ativos++;
+    porVend[p.vendedor] = (porVend[p.vendedor] || 0) + soma;
+  });
+  document.getElementById('kpiPropTotal').textContent = fmtInt(total);
+  document.getElementById('kpiPropMedia').textContent = ativos > 0 ? fmtInt(Math.round(total / ativos)) : '0';
+  var melhorDia = Object.keys(porDia).sort(function(a,b) { return porDia[b] - porDia[a]; })[0];
+  document.getElementById('kpiPropMelhorDia').textContent = melhorDia ? 'Dia ' + melhorDia + ' (' + fmtInt(porDia[melhorDia]) + ')' : '—';
+  var top = Object.keys(porVend).map(function(k) { return {n:k, v:porVend[k]}; }).sort(function(a,b) { return b.v - a.v; })[0];
+  document.getElementById('kpiPropTop').textContent = top ? top.n + ' (' + fmtInt(top.v) + ')' : '—';
+}
+
+function renderizarPropRank() {
+  var arr = [];
+  propFiltradas.forEach(function(p) {
+    var soma = 0, ativos = 0, melhorDia = 0, melhorDiaNum = 0;
+    for (var d = 0; d < p.dias.length; d++) {
+      soma += p.dias[d];
+      if (p.dias[d] > 0) ativos++;
+      if (p.dias[d] > melhorDiaNum) { melhorDiaNum = p.dias[d]; melhorDia = d + 1; }
+    }
+    arr.push({ n:p.vendedor, total:soma, media: ativos > 0 ? soma/ativos : 0, melhorDia:melhorDia, ativos:ativos });
+  });
+  arr.sort(function(a,b) { return b.total - a.total; });
+  var tbody = document.getElementById('propRankBody');
+  tbody.innerHTML = '';
+  arr.forEach(function(d, i) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + (i+1) + 'º</td><td>' + d.n + '</td><td>' + fmtInt(d.total) + '</td><td>' + d.media.toFixed(1) + '</td><td>Dia ' + d.melhorDia + '</td><td>' + d.ativos + '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function renderizarGraficosProp() {
+  var porVend = {};
+  propFiltradas.forEach(function(p) {
+    var soma = 0;
+    for (var d = 0; d < p.dias.length; d++) soma += p.dias[d];
+    porVend[p.vendedor] = soma;
+  });
+  var nomes = Object.keys(porVend).sort(function(a,b) { return porVend[b] - porVend[a]; });
+  var vals = nomes.map(function(n) { return porVend[n]; });
+  var cores = ['#F5B400','#3B82F6','#22C55E','#EF4444','#8B5CF6','#FB923C','#06B6D4','#EC4899','#10B981','#F59E0B'];
+  destruir('chartPropRank');
+  graf.chartPropRank = new Chart(document.getElementById('chartPropRank'), {
+    type:'bar', data:{labels:nomes,datasets:[{label:'Propostas',data:vals,backgroundColor:cores,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
+  });
+  var porDia = {};
+  propFiltradas.forEach(function(p) {
+    for (var d = 0; d < p.dias.length; d++) { porDia[d+1] = (porDia[d+1] || 0) + p.dias[d]; }
+  });
+  var dias = Object.keys(porDia).sort(function(a,b) { return parseInt(a) - parseInt(b); });
+  destruir('chartPropEvo');
+  graf.chartPropEvo = new Chart(document.getElementById('chartPropEvo'), {
+    type:'line', data:{labels:dias.map(function(d){return 'Dia '+d;}),datasets:[{label:'Propostas',data:dias.map(function(d){return porDia[d];}),borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,0.1)',fill:true,tension:0.3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#fff'}}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
+  });
+  var semana = [0,0,0,0,0,0,0];
+  propFiltradas.forEach(function(p) {
+    for (var d = 0; d < p.dias.length; d++) {
+      var diaSemana = new Date(2026, 6, d+1).getDay();
+      semana[diaSemana] += p.dias[d];
+    }
+  });
+  var nomesSemana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  destruir('chartPropSemana');
+  graf.chartPropSemana = new Chart(document.getElementById('chartPropSemana'), {
+    type:'bar', data:{labels:nomesSemana,datasets:[{label:'Propostas',data:semana,backgroundColor:'#8B5CF6',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
+  });
+  destruir('chartPropPart');
+  graf.chartPropPart = new Chart(document.getElementById('chartPropPart'), {
+    type:'doughnut', data:{labels:nomes,datasets:[{data:vals,backgroundColor:cores,borderWidth:2,borderColor:'#111F30'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#fff',font:{size:11}}}}}
+  });
+}
+
+window.addEventListener('DOMContentLoaded', function() { carregarDados(); });
+</script>
+</body>
+</html>
