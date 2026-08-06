@@ -43,7 +43,6 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 .panel{background:#111F30;border:1px solid rgba(255,255,255,.07);padding:20px;border-radius:15px;min-height:320px}
 .panel-title{font-size:14px;font-weight:700;margin-bottom:15px;display:flex;justify-content:space-between}
 .chart-area{position:relative;height:270px;width:100%}
-.chart-area-large{position:relative;height:400px;width:100%}
 .progress-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px;margin-bottom:20px}
 .prog-card{background:#111F30;border:1px solid rgba(255,255,255,.07);padding:15px;border-radius:12px}
 .prog-head{display:flex;justify-content:space-between;margin-bottom:10px;font-size:13px;font-weight:600}
@@ -64,20 +63,18 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 .erro-box{background:#2A1515;border:1px solid #FF5C5C;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;display:none;line-height:1.6}
 .erro-box b{color:#FF5C5C}
 .toast{position:fixed;bottom:20px;right:20px;background:#F5B400;color:#000;padding:12px 20px;border-radius:8px;font-weight:700;font-size:13px;display:none;z-index:1000}
-.indiv-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
-.indiv-card{background:#111F30;border:1px solid rgba(255,255,255,.07);padding:12px;border-radius:12px}
-.indiv-name{font-size:12px;font-weight:700;margin-bottom:8px;text-align:center}
-.indiv-chart{position:relative;height:120px;width:100%}
-@media(max-width:1200px){.indiv-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:1000px){.kpi-grid,.kpi-grid-4{grid-template-columns:repeat(2,1fr)}.charts-grid{grid-template-columns:1fr}.indiv-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.kpi-grid,.kpi-grid-4{grid-template-columns:1fr}.indiv-grid{grid-template-columns:1fr}}
+@media(max-width:1000px){.kpi-grid,.kpi-grid-4{grid-template-columns:repeat(2,1fr)}.charts-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.kpi-grid,.kpi-grid-4{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="header">
 <div class="brand">
 <div class="logo">C</div>
-<div><h1>Dashboard Concresuper</h1><p>Metas, Produzido e Propostas</p></div>
+<div>
+<h1>Dashboard Concresuper</h1>
+<p>Metas, Produzido e Propostas</p>
+</div>
 </div>
 <div class="top-actions">
 <div class="header-right">Última Atualização<br><b id="ultAtualizacao">—</b></div>
@@ -89,6 +86,8 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 <button class="tab-btn" onclick="trocarAba('propostas')">📋 Propostas</button>
 </div>
 <div class="erro-box" id="erroMsg"><b>Atenção:</b> <span id="erroTexto"></span></div>
+
+<!-- ABA 1: METAS E PRODUZIDO -->
 <div class="tab-content active" id="aba-metas">
 <div class="info-banner"><span style="font-size:18px">💡</span><span>Filtre por <b>Mês</b>, <b>Dia</b>, <b>Filial</b>, <b>Cidade</b> ou <b>Vendedor</b>.</span></div>
 <div class="filters">
@@ -106,7 +105,9 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 <div class="kpi-card"><p class="kpi-label">Dias Restantes</p><p class="kpi-value" id="kpiDias">—</p></div>
 </div>
 <div class="section-title">Produzido vs Meta 100% <span class="badge">NOVO</span></div>
-<div class="charts-grid"><div class="panel chart-full"><div class="panel-title">Produzido vs Meta 100% Individual</div><div class="chart-area"><canvas id="chartMeta100"></canvas></div></div></div>
+<div class="charts-grid">
+<div class="panel chart-full"><div class="panel-title">Produzido vs Meta 100% Individual</div><div class="chart-area"><canvas id="chartMeta100"></canvas></div></div>
+</div>
 <div class="section-title">Análise de Desempenho</div>
 <div class="charts-grid">
 <div class="panel"><div class="panel-title">Ranking por Volume</div><div class="chart-area"><canvas id="chartRank"></canvas></div></div>
@@ -119,9 +120,14 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 <div class="section-title">Classificação Geral</div>
 <div class="ranking-section">
 <div class="podium" id="podium"></div>
-<table class="rank-table"><thead><tr><th>#</th><th>Vendedor</th><th>Produzido</th><th>Meta</th><th>%</th></tr></thead><tbody id="rankBody"></tbody></table>
+<table class="rank-table">
+<thead><tr><th>#</th><th>Vendedor</th><th>Produzido</th><th>Meta</th><th>%</th></tr></thead>
+<tbody id="rankBody"></tbody>
+</table>
 </div>
 </div>
+
+<!-- ABA 2: PROPOSTAS -->
 <div class="tab-content" id="aba-propostas">
 <div class="info-banner"><span style="font-size:18px">💡</span><span>Filtre as propostas por <b>Mês</b> ou <b>Vendedor</b>.</span></div>
 <div class="filters">
@@ -134,29 +140,32 @@ body{background:#0B1420;color:#fff;min-height:100vh;padding:20px}
 <div class="kpi-card"><p class="kpi-label">Melhor Dia</p><p class="kpi-value" id="kpiPropMelhorDia" style="font-size:18px">—</p></div>
 <div class="kpi-card"><p class="kpi-label">Melhor Vendedor</p><p class="kpi-value" id="kpiPropTop" style="font-size:18px">—</p></div>
 </div>
-<div class="section-title">Volume Diário de Propostas Registradas</div>
-<div class="charts-grid"><div class="panel chart-full"><div class="panel-title">Evolução Diária de Propostas (Geral)</div><div class="chart-area-large"><canvas id="chartPropEvo"></canvas></div></div></div>
-<div class="section-title">Comparativo de Propostas Entre Vendedores</div>
-<div class="charts-grid"><div class="panel chart-full"><div class="panel-title">Total de Propostas por Vendedor</div><div class="chart-area-large"><canvas id="chartPropRank"></canvas></div></div></div>
-<div class="section-title">Distribuição de Propostas por Vendedor (%)</div>
-<div class="charts-grid"><div class="panel chart-full"><div class="panel-title">Participação nas Propostas</div><div class="chart-area-large"><canvas id="chartPropPart"></canvas></div></div></div>
-<div class="section-title">Desempenho Individual por Vendedor <span class="badge">5/dia</span></div>
-<div class="indiv-grid" id="indivGrid"></div>
-<div class="section-title">Propostas por Dia da Semana</div>
-<div class="charts-grid"><div class="panel chart-full"><div class="panel-title">Propostas por Dia da Semana</div><div class="chart-area-large"><canvas id="chartPropSemana"></canvas></div></div></div>
+<div class="section-title">Análise de Propostas</div>
+<div class="charts-grid">
+<div class="panel"><div class="panel-title">Total de Propostas por Vendedor</div><div class="chart-area"><canvas id="chartPropRank"></canvas></div></div>
+<div class="panel"><div class="panel-title">Evolução Diária de Propostas</div><div class="chart-area"><canvas id="chartPropEvo"></canvas></div></div>
+<div class="panel"><div class="panel-title">Propostas por Dia da Semana</div><div class="chart-area"><canvas id="chartPropSemana"></canvas></div></div>
+<div class="panel"><div class="panel-title">Participação nas Propostas</div><div class="chart-area"><canvas id="chartPropPart"></canvas></div></div>
+</div>
 <div class="section-title">Ranking de Propostas</div>
 <div class="ranking-section">
-<table class="rank-table"><thead><tr><th>#</th><th>Vendedor</th><th>Total Propostas</th><th>Média/Dia</th><th>Melhor Dia</th><th>Dias Ativos</th></tr></thead><tbody id="propRankBody"></tbody></table>
+<table class="rank-table">
+<thead><tr><th>#</th><th>Vendedor</th><th>Total Propostas</th><th>Média/Dia</th><th>Melhor Dia</th><th>Dias Ativos</th></tr></thead>
+<tbody id="propRankBody"></tbody>
+</table>
 </div>
 </div>
+
 <div class="toast" id="toast">Carregando...</div>
+
 <script>
 var CAMINHO = 'dados.xlsx';
 var dados = [], filtrados = [], metas100 = {}, propostas = [], propFiltradas = [], graf = {};
+
 function parseNum(v) {
   if (v == null || v === '') return 0;
   if (typeof v === 'number') return isNaN(v) ? 0 : v;
-  var s = String(v).replace(/[R$\s]/g, '').replace(/[.]/g, '').replace(',', '.').trim();
+  var s = String(v).replace(/[R$\s]/g, '').replace(/\./g, '').replace(',', '.').trim();
   return parseFloat(s) || 0;
 }
 function parseData(v) {
@@ -183,12 +192,15 @@ function toast(m) {
   t._timer = setTimeout(function(){t.style.display='none'}, 3500);
 }
 function destruir(id) { if (graf[id]) { graf[id].destroy(); graf[id] = null; } }
+
 function trocarAba(aba) {
   document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
   document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('active'); });
   document.getElementById('aba-' + aba).classList.add('active');
   document.querySelectorAll('.tab-btn')[aba === 'metas' ? 0 : 1].classList.add('active');
 }
+
+/* ===== LEITURA DE METAS 100% ===== */
 function lerMetas100(wb) {
   metas100 = {};
   var sheetName = null;
@@ -221,6 +233,8 @@ function getMeta100(vendedor, mes) {
   if (mLower && metas100[mLower + '|' + vLower]) return metas100[mLower + '|' + vLower];
   return 0;
 }
+
+/* ===== LEITURA DE DADOS DIARIOS ===== */
 function processarDados(registros) {
   var headerRow = registros[0] || [];
   var colMap = {};
@@ -264,6 +278,8 @@ function processarDados(registros) {
     });
   }
 }
+
+/* ===== LEITURA DE PROPOSTAS ===== */
 function lerPropostas(wb) {
   propostas = [];
   var sheetName = null;
@@ -296,6 +312,8 @@ function lerPropostas(wb) {
   }
   console.log('Propostas carregadas:', propostas.length, 'registros');
 }
+
+/* ===== CARREGAMENTO PRINCIPAL ===== */
 async function carregarDados() {
   dados = []; filtrados = []; metas100 = {}; propostas = []; propFiltradas = [];
   Object.keys(graf).forEach(function(k) { destruir(k); });
@@ -343,6 +361,8 @@ async function carregarDados() {
     toast('Erro ao carregar');
   }
 }
+
+/* ===== FILTROS METAS ===== */
 function preencherFiltros() {
   var meses = [], dias = [], filiais = [], cidades = [], vendedores = [];
   dados.forEach(function(d) {
@@ -379,6 +399,8 @@ function aplicarFiltros() {
   });
   atualizarKPIs(); renderizarProgresso(); renderizarRanking(); renderizarGraficos();
 }
+
+/* ===== FILTROS PROPOSTAS ===== */
 function preencherFiltrosProp() {
   var meses = [], vends = [];
   propostas.forEach(function(p) {
@@ -400,8 +422,10 @@ function aplicarFiltrosProp() {
     if (fVend !== 'all' && p.vendedor !== fVend) return false;
     return true;
   });
-  atualizarKPIsProp(); renderizarPropRank(); renderizarGraficosProp(); renderizarIndividuais();
+  atualizarKPIsProp(); renderizarPropRank(); renderizarGraficosProp();
 }
+
+/* ===== KPIs METAS ===== */
 function atualizarKPIs() {
   var tMeta = 0, tProd = 0;
   filtrados.forEach(function(d) { tMeta += d.meta; tProd += d.produzido; });
@@ -415,6 +439,8 @@ function atualizarKPIs() {
   var hoje = new Date(), fim = new Date(hoje.getFullYear(), hoje.getMonth()+1, 0);
   document.getElementById('kpiDias').textContent = Math.max(0, Math.ceil((fim - hoje) / 86400000));
 }
+
+/* ===== PROGRESSO ===== */
 function renderizarProgresso() {
   var pv = {};
   filtrados.forEach(function(d) {
@@ -436,6 +462,8 @@ function renderizarProgresso() {
     grid.appendChild(card);
   });
 }
+
+/* ===== RANKING METAS ===== */
 function renderizarRanking() {
   var pv = {};
   filtrados.forEach(function(d) {
@@ -462,6 +490,8 @@ function renderizarRanking() {
     podium.appendChild(div);
   }
 }
+
+/* ===== GRAFICOS METAS ===== */
 function renderizarGraficos() {
   var pv = {};
   filtrados.forEach(function(d) {
@@ -473,6 +503,7 @@ function renderizarGraficos() {
   var metas = nomes.map(function(n) { return pv[n].meta; });
   var m100 = nomes.map(function(n) { return getMeta100(n, pv[n].mes); });
   var cores = ['#F5B400','#3B82F6','#22C55E','#EF4444','#8B5CF6','#FB923C','#06B6D4','#EC4899','#10B981','#F59E0B'];
+
   destruir('chartRank');
   graf.chartRank = new Chart(document.getElementById('chartRank'), {
     type:'bar', data:{labels:nomes,datasets:[{label:'Produzido',data:prods,backgroundColor:cores,borderRadius:6}]},
@@ -502,9 +533,12 @@ function renderizarGraficos() {
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#fff',font:{size:11}}}}}
   });
 }
+
+/* ===== KPIs PROPOSTAS ===== */
 function atualizarKPIsProp() {
   var total = 0, ativos = 0;
-  var porVend = {}, porDia = {};
+  var porVend = {};
+  var porDia = {};
   propFiltradas.forEach(function(p) {
     var soma = 0;
     for (var d = 0; d < p.dias.length; d++) {
@@ -522,6 +556,8 @@ function atualizarKPIsProp() {
   var top = Object.keys(porVend).map(function(k) { return {n:k, v:porVend[k]}; }).sort(function(a,b) { return b.v - a.v; })[0];
   document.getElementById('kpiPropTop').textContent = top ? top.n + ' (' + fmtInt(top.v) + ')' : '—';
 }
+
+/* ===== RANKING PROPOSTAS ===== */
 function renderizarPropRank() {
   var arr = [];
   propFiltradas.forEach(function(p) {
@@ -538,10 +574,12 @@ function renderizarPropRank() {
   tbody.innerHTML = '';
   arr.forEach(function(d, i) {
     var tr = document.createElement('tr');
-    tr.innerHTML = '<td>' + (i+1) + 'º</td><td>' + d.n + '</td><td>' + fmtInt(d.total) + '</td><td>' + d.media.toFixed(1) + '</td><td>Dia ' + d.melhorDia + '</td><td>' + d.ativos + '</td>';
+    tr.innerHTML = '<td>' + (i+1) + 'º</td><td>' + d.n + '</td><td>' + fmtInt(d.total) + '</td><td>' + d.media.toFixed(1) + '</td><td>Dia ' + d.melhorDia + ' (' + fmtInt(d.total > 0 ? arr[i].total : 0) + ')</td><td>' + d.ativos + '</td>';
     tbody.appendChild(tr);
   });
 }
+
+/* ===== GRAFICOS PROPOSTAS ===== */
 function renderizarGraficosProp() {
   var porVend = {};
   propFiltradas.forEach(function(p) {
@@ -552,11 +590,13 @@ function renderizarGraficosProp() {
   var nomes = Object.keys(porVend).sort(function(a,b) { return porVend[b] - porVend[a]; });
   var vals = nomes.map(function(n) { return porVend[n]; });
   var cores = ['#F5B400','#3B82F6','#22C55E','#EF4444','#8B5CF6','#FB923C','#06B6D4','#EC4899','#10B981','#F59E0B'];
+
   destruir('chartPropRank');
   graf.chartPropRank = new Chart(document.getElementById('chartPropRank'), {
     type:'bar', data:{labels:nomes,datasets:[{label:'Propostas',data:vals,backgroundColor:cores,borderRadius:6}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
   });
+
   var porDia = {};
   propFiltradas.forEach(function(p) {
     for (var d = 0; d < p.dias.length; d++) { porDia[d+1] = (porDia[d+1] || 0) + p.dias[d]; }
@@ -564,9 +604,10 @@ function renderizarGraficosProp() {
   var dias = Object.keys(porDia).sort(function(a,b) { return parseInt(a) - parseInt(b); });
   destruir('chartPropEvo');
   graf.chartPropEvo = new Chart(document.getElementById('chartPropEvo'), {
-    type:'line', data:{labels:dias.map(function(d){return 'Dia '+d;}),datasets:[{label:'Propostas',data:dias.map(function(d){return porDia[d];}),borderColor:'#F5B400',backgroundColor:'rgba(245,180,0,0.15)',fill:true,tension:0.3,borderWidth:2}]},
+    type:'line', data:{labels:dias.map(function(d){return 'Dia '+d;}),datasets:[{label:'Propostas',data:dias.map(function(d){return porDia[d];}),borderColor:'#3B82F6',backgroundColor:'rgba(59,130,246,0.1)',fill:true,tension:0.3}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#fff'}}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
   });
+
   var semana = [0,0,0,0,0,0,0];
   propFiltradas.forEach(function(p) {
     for (var d = 0; d < p.dias.length; d++) {
@@ -579,44 +620,15 @@ function renderizarGraficosProp() {
   graf.chartPropSemana = new Chart(document.getElementById('chartPropSemana'), {
     type:'bar', data:{labels:nomesSemana,datasets:[{label:'Propostas',data:semana,backgroundColor:'#8B5CF6',borderRadius:6}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3'}},x:{ticks:{color:'#8CA0B3'}}}}
-  });
+  );
+
   destruir('chartPropPart');
   graf.chartPropPart = new Chart(document.getElementById('chartPropPart'), {
     type:'doughnut', data:{labels:nomes,datasets:[{data:vals,backgroundColor:cores,borderWidth:2,borderColor:'#111F30'}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#fff',font:{size:11}}}}}
   });
 }
-function renderizarIndividuais() {
-  var grid = document.getElementById('indivGrid');
-  grid.innerHTML = '';
-  var cores = ['#F5B400','#3B82F6','#22C55E','#EF4444','#8B5CF6','#FB923C','#06B6D4','#EC4899','#10B981','#F59E0B'];
-  var diasLabels = [];
-  for (var i = 1; i <= 31; i++) diasLabels.push('Dia ' + i);
-  propFiltradas.forEach(function(p, idx) {
-    var cor = cores[idx % cores.length];
-    var card = document.createElement('div');
-    card.className = 'indiv-card';
-    var canvasId = 'indiv_' + idx;
-    card.innerHTML = '<div class="indiv-name" style="color:' + cor + '">' + p.vendedor + '</div><div class="indiv-chart"><canvas id="' + canvasId + '"></canvas></div>';
-    grid.appendChild(card);
-    var meta5 = Array(p.dias.length).fill(5);
-    destruir(canvasId);
-    graf[canvasId] = new Chart(document.getElementById(canvasId), {
-      type:'line',
-      data:{labels:diasLabels.slice(0, p.dias.length),datasets:[
-        {label:p.vendedor,data:p.dias,borderColor:cor,backgroundColor:'rgba(' + hexToRgb(cor) + ',0.1)',fill:false,tension:0.3,borderWidth:2,pointRadius:2},
-        {label:'Meta 5/dia',data:meta5,borderColor:'#FF5C5C',borderDash:[5,5],fill:false,tension:0,borderWidth:1,pointRadius:0}
-      ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#8CA0B3',font:{size:9}},max:10},x:{display:false}}}
-    });
-  });
-}
-function hexToRgb(hex) {
-  var r = parseInt(hex.substr(1,2),16);
-  var g = parseInt(hex.substr(3,2),16);
-  var b = parseInt(hex.substr(5,2),16);
-  return r + ',' + g + ',' + b;
-}
+
 window.addEventListener('DOMContentLoaded', function() { carregarDados(); });
 </script>
 </body>
